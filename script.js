@@ -5,13 +5,17 @@ window.addEventListener("DOMContentLoaded", function() {
     const ROW_CONTAINER     = document.createElement("div");
     const BOX               = document.createElement("div");
 
-    const SIZE_FORM         = document.createElement("form")
-    const SIZE_LABEL        = document.createElement("label")
-    const SIZE_INPUT        = document.createElement("input")
+    const SIZE_FORM         = document.createElement("form");
+    const SIZE_LABEL        = document.createElement("label");
+    const SIZE_INPUT        = document.createElement("input");
     const SIZE_BUTTON       = document.createElement("button");
 
-    const ORIGINAL_SIZE     = 16;
+    const MODE_SELECT         = document.createElement("select");
+    const MODE_NORMAL        = document.createElement("option");
+    const MODE_WILD        = document.createElement("option");
 
+    const ORIGINAL_SIZE     = 16;
+    let mode = "normal";
 
     // style DOM elements
     BODY.setAttribute("style",
@@ -25,7 +29,7 @@ window.addEventListener("DOMContentLoaded", function() {
     BOX.classList.add("hoverBox")
 
     SIZE_FORM.setAttribute("style",
-    "display: flex; flex-direction: row; flex: auto; justify-content: space-evenly; align-items: flex-end; gap: 10px; margin-top: 10px;")
+    "display: flex; flex-direction: row; flex: auto; justify-content: space-evenly; align-items: center; gap: 10px; margin-top: 10px;")
     SIZE_LABEL.textContent = "Input Size: "
     SIZE_BUTTON.textContent = "Confirm"
     SIZE_FORM.id = "size-form"
@@ -36,15 +40,24 @@ window.addEventListener("DOMContentLoaded", function() {
     SIZE_INPUT.autocomplete = "off"
     SIZE_BUTTON.type = "submit"
 
-    SIZE_INPUT.addEventListener("focus", function() {
+    MODE_NORMAL.value = "normal"
+    MODE_NORMAL.textContent = "Normal"
+    MODE_WILD.value = "wild"
+    MODE_WILD.textContent = "Wild"
         
-        SIZE_INPUT.placeholder = "";
-    
-    })
-    BODY.insertBefore(SIZE_FORM, BODY.children[0]);
-    SIZE_FORM.appendChild(SIZE_LABEL)
+    // position DOM
+    MODE_SELECT.appendChild(MODE_NORMAL)
+    MODE_SELECT.appendChild(MODE_WILD)
     SIZE_LABEL.appendChild(SIZE_INPUT)
+    SIZE_FORM.appendChild(SIZE_LABEL)
+    SIZE_FORM.appendChild(MODE_SELECT)
     SIZE_FORM.appendChild(SIZE_BUTTON)
+    BODY.insertBefore(SIZE_FORM, BODY.children[0]);
+
+
+    SIZE_INPUT.addEventListener("focus", function() {
+        SIZE_INPUT.placeholder = "";
+    })
 
 
     // initialize 16x16 board
@@ -54,9 +67,13 @@ window.addEventListener("DOMContentLoaded", function() {
     // attach hover effects
     MAIN_CONTAINER.addEventListener("mouseover", function(e){
         if (e.target.classList.contains("hoverBox")) {
-            color = randomizeColor();
-            console.log(color);
-            e.target.style.backgroundColor = randomizeColor();
+            if (mode === "normal") {
+                e.target.style.backgroundColor = "black";
+            }
+            else if (mode === "wild") {
+                color = randomizeColor();
+                e.target.style.backgroundColor = randomizeColor();
+            }
         }
     })
 
@@ -68,11 +85,16 @@ window.addEventListener("DOMContentLoaded", function() {
         let numberOfBoxes = evaluateValue(SIZE_INPUT.value, ORIGINAL_SIZE);
         createBoard(MAIN_CONTAINER, ROW_CONTAINER, BOX, numberOfBoxes);
 
-        SIZE_FORM.reset();
+        console.log(MODE_SELECT.value)
+        if (MODE_SELECT.value === "wild") {
+            mode = "wild";
+        } else {
+            mode = "normal";
+        }
+
+        SIZE_INPUT.value = '';
         SIZE_INPUT.blur();
     })
-
-    console.log(randomizeColor());
     
 })
 
